@@ -42,7 +42,7 @@ fn main() {
     trace!("Configuration:\n{:#?}", settings);
 
     // Collect command line arguments to pass through
-    let args: Vec<OsString> = env::args_os().skip(1).collect();
+    let mut args: Vec<OsString> = env::args_os().skip(1).collect();
     trace!("Args:\n{:#?}", args);
     if args.is_empty() {
         abort("No arguments passed, re-run with --help to learn more.");
@@ -59,13 +59,6 @@ fn main() {
             _ => trace!("Assuming arguments are coming from binfmt_misc"),
         }
     }
-
-    // File descriptor 3 is where binfmt_misc typically passes the executable
-    let binary: PathBuf = read_link("/proc/self/fd/3").unwrap_or_else(|e| {
-        error!("Failed to read the executable from fd#3: {}", e);
-        exit(1);
-    });
-    trace!("Binary: {:#?}", binary);
 
     let mut interpreter_id = &settings.defaults.interpreter;
     for binary in settings.binaries.values() {
@@ -156,8 +149,9 @@ fn main() {
         command = Command::new(interpreter_path);
     }
 
-    command.arg(binary);
-
+    let new_binary = args.remove(0);
+    args.remove(0);
+    command.arg(new_binary);
     // Pass through all the arguments
     command.args(&args);
 
