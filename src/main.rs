@@ -148,7 +148,7 @@ fn main() {
     let mut command;
     if use_muvm {
         info!("Using {} with muvm", interpreter_name);
-        command = Command::new("/usr/bin/muvm");
+        command = Command::new(&settings.muvm.path);
         command.arg("--");
         command.arg(interpreter_path);
     } else {
