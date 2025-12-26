@@ -150,7 +150,6 @@ fn main() {
     }
 
     let new_binary = args.remove(0);
-    args.remove(0);
     command.arg(new_binary);
     // Pass through all the arguments
     command.args(&args);
